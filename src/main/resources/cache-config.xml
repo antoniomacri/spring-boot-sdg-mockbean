@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:gfe="http://www.springframework.org/schema/geode"
+       xmlns:gfe-data="http://www.springframework.org/schema/data/geode"
+       xmlns="http://www.springframework.org/schema/beans"
+       xsi:schemaLocation="
+    http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
+    http://www.springframework.org/schema/geode https://www.springframework.org/schema/geode/spring-geode.xsd
+    http://www.springframework.org/schema/data/geode https://www.springframework.org/schema/data/geode/spring-data-geode.xsd
+">
+
+    <gfe-data:repositories base-package="com.spring.mockbeanbug.repository"/>
+
+    <bean id="myPDXSerializer" class="org.apache.geode.pdx.ReflectionBasedAutoSerializer">
+        <constructor-arg index="0" value="com.spring.mockbeanbug.*#identity=id"/>
+    </bean>
+
+    <gfe:disk-store id="diskStore" write-buffer-size="8192">
+        <gfe:disk-dir location="diskStore"/>
+    </gfe:disk-store>
+
+    <gfe:cache pdx-persistent="true" pdx-serializer-ref="myPDXSerializer" pdx-disk-store="diskStore"/>
+
+    <gfe:replicated-region id="prog" disk-store-ref="diskStore" scope="global"/>
+
+</beans>
